@@ -32,7 +32,8 @@
 <header>הוראות יומיות</header>
 
 <div id="auth" class="card">
-  <input id="email" placeholder="אימייל">
+  <!-- שדה אימייל עם autocomplete אך ערך ריק בהתחלה -->
+  <input id="email" placeholder="אימייל" autocomplete="on">
   <input id="password" placeholder="סיסמה" type="password">
   <button id="login">התחברות</button>
   <button id="register">הרשמה</button>
@@ -101,9 +102,9 @@ const editText = document.getElementById('editText');
 const todayText = document.getElementById('todayText');
 const adminPanel = document.getElementById('adminPanel');
 
+// **שדה האימייל ריק בהתחלה – לא מכניסים ערך**
 window.onload = () => {
-  const savedEmail = localStorage.getItem("savedEmail");
-  if(savedEmail) document.getElementById("email").value = savedEmail;
+  // אין כאן קוד שמכניס את savedEmail לשדה
 };
 
 // פונקציות להודעות
@@ -120,7 +121,7 @@ loginBtn.onclick = async () => {
   const password = document.getElementById('password').value.trim();
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    localStorage.setItem("savedEmail", email);
+    localStorage.setItem("savedEmail", email); // נשמר לשימוש פנימי בלבד
   } catch(e){ showMessage(authMessage, "שגיאה בהתחברות: "+e.message,'error'); }
 };
 
@@ -129,7 +130,7 @@ registerBtn.onclick = async () => {
   const password = document.getElementById('password').value.trim();
   try {
     await createUserWithEmailAndPassword(auth, email, password);
-    localStorage.setItem("savedEmail", email);
+    localStorage.setItem("savedEmail", email); // נשמר לשימוש פנימי בלבד
   } catch(e){ showMessage(authMessage, "שגיאה בהרשמה: "+e.message,'error'); }
 };
 
@@ -149,6 +150,7 @@ async function loadInstruction() {
   todayText.innerText = docSnap.exists()? docSnap.data().text : "אין הוראה להיום.";
 }
 
+// Auth state change
 onAuthStateChanged(auth, async user => {
   if(user){
     document.getElementById('auth').style.display = 'none';
@@ -214,3 +216,4 @@ saveEditBtn.onclick = async ()=>{
 </script>
 </body>
 </html>
+
