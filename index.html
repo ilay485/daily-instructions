@@ -1,263 +1,219 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>הוראות יומיות</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom, #f7f9fc, #ffffff);
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      direction: rtl;
-    }
-
-    header {
-      background: #1db954;
-      color: white;
-      padding: 20px 10px;
-      font-size: 24px;
-      font-weight: bold;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .card {
-      margin: 30px auto;
-      padding: 25px;
-      width: 90%;
-      max-width: 420px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      font-size: 16px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      text-align: right;
-      box-sizing: border-box;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      margin: 10px 0;
-      font-size: 16px;
-      border: none;
-      border-radius: 12px;
-      background: #1db954;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-
-    button:hover {
-      background: #17a74a;
-      transform: scale(1.03);
-    }
-
-    #logout {
-      background: #f44336;
-    }
-
-    #logout:hover {
-      background: #d32f2f;
-    }
-
-    #adminPanel {
-      background: #e8f5e9;
-    }
-
-    h2 {
-      color: #1db954;
-      margin-bottom: 10px;
-      font-size: 22px;
-    }
-
-    @media (max-width: 480px) {
-      header {
-        font-size: 22px;
-      }
-      .card {
-        width: 94%;
-        padding: 20px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>הוראות יומיות</title>
+<style>
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(to bottom, #f7f9fc, #ffffff); margin:0; padding:0; text-align:center; direction:rtl; }
+  header { background:#1db954; color:white; padding:20px 10px; font-size:24px; font-weight:bold; box-shadow:0 4px 12px rgba(0,0,0,0.15); position:sticky; top:0; z-index:100; }
+  .card { margin:30px auto; padding:25px; width:90%; max-width:420px; background:white; border-radius:16px; box-shadow:0 6px 16px rgba(0,0,0,0.1); position:relative; }
+  input, textarea { width:100%; padding:14px; margin:10px 0; font-size:16px; border-radius:12px; border:1px solid #ccc; text-align:right; box-sizing:border-box; }
+  textarea { resize:vertical; min-height:80px; }
+  button { width:100%; padding:14px; margin:10px 0; font-size:16px; border:none; border-radius:12px; background:#1db954; color:white; font-weight:bold; cursor:pointer; transition:0.3s ease; }
+  button:hover { background:#17a74a; transform:scale(1.03); }
+  #logout { background:#f44336; }
+  #logout:hover { background:#d32f2f; }
+  #adminPanel { background:#e8f5e9; }
+  h2 { color:#1db954; margin-bottom:10px; font-size:22px; }
+  .message { padding:10px; margin:10px 0; border-radius:12px; font-weight:bold; display:none; }
+  .error { background:#fdd; color:#900; }
+  .success { background:#dfd; color:#070; }
+  @media(max-width:480px){ header{font-size:22px;} .card{width:94%; padding:20px;} }
+  /* Modal */
+  .modal { display:none; position:fixed; z-index:200; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.5); }
+  .modal-content { background:white; margin:10% auto; padding:20px; border-radius:16px; width:90%; max-width:400px; text-align:right; position:relative; }
+  .close { position:absolute; right:15px; top:10px; font-size:24px; font-weight:bold; cursor:pointer; color:#555; }
+  .loading { font-style:italic; color:#999; }
+</style>
 </head>
 <body>
-  <header>הוראות יומיות</header>
 
-  <!-- התחברות / הרשמה -->
-  <div id="auth" class="card">
-    <input id="email" placeholder="אימייל">
-    <input id="password" placeholder="סיסמה" type="password">
-    <button id="login">התחברות</button>
-    <button id="register">הרשמה</button>
+<header>הוראות יומיות</header>
+
+<div id="auth" class="card">
+  <input id="email" placeholder="אימייל">
+  <input id="password" placeholder="סיסמה" type="password">
+  <button id="login">התחברות</button>
+  <button id="register">הרשמה</button>
+  <div id="authMessage" class="message"></div>
+</div>
+
+<div id="instructions" class="card" style="display:none;">
+  <h2>ההוראה היומית:</h2>
+  <p id="todayText" class="loading">טוען...</p>
+  <button id="editBtn" style="display:none;">✏️ ערוך הוראה של היום</button>
+  <button id="logout">התנתק</button>
+  <div id="instructionMessage" class="message"></div>
+</div>
+
+<div id="adminPanel" class="card" style="display:none;">
+  <h3>ניהול הוראות (אדמין בלבד)</h3>
+  <input id="adminDate" type="date">
+  <input id="adminText" placeholder="כתוב את ההוראה כאן">
+  <button id="saveInstruction">💾 שמור הוראה</button>
+  <div id="adminMessage" class="message"></div>
+</div>
+
+<!-- Modal לעריכה -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeModal">&times;</span>
+    <h3>עריכת הוראה</h3>
+    <textarea id="editText"></textarea>
+    <button id="saveEdit">💾 שמור שינוי</button>
+    <div id="editMessage" class="message"></div>
   </div>
+</div>
 
-  <!-- הצגת הוראה יומית -->
-  <div id="instructions" class="card" style="display:none;">
-    <h2>ההוראה היומית:</h2>
-    <p id="todayText"></p>
-    <div id="editSection" style="display:none;">
-      <textarea id="editText"></textarea>
-      <button id="saveEdit">שמור שינוי</button>
-    </div>
-    <button id="editBtn" style="display:none;">ערוך הוראה של היום</button>
-    <button id="logout">התנתק</button>
-  </div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-  <!-- Admin Panel רגיל -->
-  <div id="adminPanel" class="card" style="display:none;">
-    <h3>ניהול הוראות (אדמין בלבד)</h3>
-    <input id="adminDate" type="date">
-    <input id="adminText" placeholder="כתוב את ההוראה כאן">
-    <button id="saveInstruction">שמור הוראה</button>
-  </div>
+const firebaseConfig = {
+  apiKey: "AIzaSyBZHoP1FhaKBX0AcK7tc0g8uzpri9IIKsI",
+  authDomain: "capital-market-app-ec814.firebaseapp.com",
+  projectId: "capital-market-app-ec814",
+  storageBucket: "capital-market-app-ec814.firebasestorage.app",
+  messagingSenderId: "309964966513",
+  appId: "1:309964966513:web:5efd82a505e7f0f58e29d0",
+};
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-analytics.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBZHoP1FhaKBX0AcK7tc0g8uzpri9IIKsI",
-      authDomain: "capital-market-app-ec814.firebaseapp.com",
-      projectId: "capital-market-app-ec814",
-      storageBucket: "capital-market-app-ec814.firebasestorage.app",
-      messagingSenderId: "309964966513",
-      appId: "1:309964966513:web:5efd82a505e7f0f58e29d0",
-      measurementId: "G-029WT6XYBW"
-    };
+const loginBtn = document.getElementById('login');
+const registerBtn = document.getElementById('register');
+const logoutBtn = document.getElementById('logout');
+const editBtn = document.getElementById('editBtn');
+const saveEditBtn = document.getElementById('saveEdit');
+const closeModal = document.getElementById('closeModal');
 
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+const authMessage = document.getElementById('authMessage');
+const instructionMessage = document.getElementById('instructionMessage');
+const editMessage = document.getElementById('editMessage');
+const adminMessage = document.getElementById('adminMessage');
 
-    const adminEmail = "ilaybs2211@gmail.com";
-    const loginBtn = document.getElementById('login');
-    const registerBtn = document.getElementById('register');
-    const logoutBtn = document.getElementById('logout');
-    const editBtn = document.getElementById('editBtn');
-    const saveEditBtn = document.getElementById('saveEdit');
-    const editSection = document.getElementById('editSection');
-    const adminPanel = document.getElementById('adminPanel');
-    const todayText = document.getElementById('todayText');
-    const editText = document.getElementById('editText');
+const editModal = document.getElementById('editModal');
+const editText = document.getElementById('editText');
+const todayText = document.getElementById('todayText');
+const adminPanel = document.getElementById('adminPanel');
 
-    window.onload = () => {
-      const savedEmail = localStorage.getItem("savedEmail");
-      if(savedEmail) document.getElementById("email").value = savedEmail;
-    };
+window.onload = () => {
+  const savedEmail = localStorage.getItem("savedEmail");
+  if(savedEmail) document.getElementById("email").value = savedEmail;
+};
 
-    loginBtn.onclick = async () => {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        localStorage.setItem("savedEmail", email);
-      } catch(e) {
-        alert("שגיאה בהתחברות: " + e.message);
-      }
-    };
+// פונקציות להודעות
+function showMessage(el, text, type='success') {
+  el.innerText = text;
+  el.className = `message ${type}`;
+  el.style.display = 'block';
+  setTimeout(()=>el.style.display='none', 4000);
+}
 
-    registerBtn.onclick = async () => {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        localStorage.setItem("savedEmail", email);
-      } catch(e) {
-        alert("שגיאה בהרשמה: " + e.message);
-      }
-    };
+// Login & Register
+loginBtn.onclick = async () => {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    localStorage.setItem("savedEmail", email);
+  } catch(e){ showMessage(authMessage, "שגיאה בהתחברות: "+e.message,'error'); }
+};
 
-    logoutBtn.onclick = async () => {
-      await signOut(auth);
-      location.reload();
-    };
+registerBtn.onclick = async () => {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    localStorage.setItem("savedEmail", email);
+  } catch(e){ showMessage(authMessage, "שגיאה בהרשמה: "+e.message,'error'); }
+};
 
-    onAuthStateChanged(auth, user => {
-      if(user) {
-        document.getElementById('auth').style.display = 'none';
-        document.getElementById('instructions').style.display = 'block';
-        loadInstruction();
+// Logout
+logoutBtn.onclick = async ()=> { await signOut(auth); location.reload(); };
 
-        // אם אתה אדמין
-        if(user.email === adminEmail){
-          adminPanel.style.display = 'block';
-          editBtn.style.display = 'block';
-        } else {
-          adminPanel.style.display = 'none';
-          editBtn.style.display = 'none';
-        }
-      } else {
-        document.getElementById('auth').style.display = 'block';
-        document.getElementById('instructions').style.display = 'none';
-      }
-    });
+// Helper: generate date string YYYY-MM-DD
+function getTodayId(date=new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
 
-    async function loadInstruction() {
-      const today = new Date();
-      const docId = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
-      const docRef = doc(db, "instructions", docId);
-      const docSnap = await getDoc(docRef);
-      todayText.innerText = docSnap.exists() ? docSnap.data().text : "אין הוראה להיום.";
+// Load today's instruction
+async function loadInstruction() {
+  todayText.innerText = 'טוען...';
+  const docRef = doc(db, "instructions", getTodayId());
+  const docSnap = await getDoc(docRef);
+  todayText.innerText = docSnap.exists()? docSnap.data().text : "אין הוראה להיום.";
+}
+
+onAuthStateChanged(auth, async user => {
+  if(user){
+    document.getElementById('auth').style.display = 'none';
+    document.getElementById('instructions').style.display = 'block';
+    await loadInstruction();
+
+    // בדיקת אדמין לפי role
+    const adminEmails = ["ilaybs2211@gmail.com"];
+    if(adminEmails.includes(user.email)){
+      adminPanel.style.display = 'block';
+      editBtn.style.display = 'block';
+    } else {
+      adminPanel.style.display = 'none';
+      editBtn.style.display = 'none';
     }
 
-    // עריכת הוראה יומית
-    editBtn.onclick = async () => {
-      const today = new Date();
-      const docId = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
-      const docRef = doc(db, "instructions", docId);
-      const docSnap = await getDoc(docRef);
+  } else {
+    document.getElementById('auth').style.display = 'block';
+    document.getElementById('instructions').style.display = 'none';
+  }
+});
 
-      editText.value = docSnap.exists() ? docSnap.data().text : "";
-      editSection.style.display = 'block';
-    };
+// Admin: Save instruction
+document.getElementById('saveInstruction').onclick = async ()=>{
+  const date = document.getElementById('adminDate').value;
+  const text = document.getElementById('adminText').value.trim();
+  if(!date || !text){ showMessage(adminMessage,'מלא תאריך והוראה','error'); return; }
 
-    saveEditBtn.onclick = async () => {
-      const user = auth.currentUser;
-      if(!user || user.email !== adminEmail){
-        alert("רק האדמין יכול לשנות הוראה.");
-        return;
-      }
+  try{
+    await setDoc(doc(db,"instructions",date),{text});
+    showMessage(adminMessage,'ההוראה נשמרה בהצלחה!','success');
+    if(getTodayId()===date) await loadInstruction();
+  } catch(e){ showMessage(adminMessage,'שגיאה: '+e.message,'error'); }
+};
 
-      const today = new Date();
-      const docId = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
-      const newText = editText.value.trim();
+// Edit modal
+editBtn.onclick = async ()=>{
+  const docRef = doc(db, "instructions", getTodayId());
+  const docSnap = await getDoc(docRef);
+  editText.value = docSnap.exists()? docSnap.data().text : '';
+  editModal.style.display = 'block';
+};
 
-      if(!newText){ alert("ההוראה לא יכולה להיות ריקה."); return; }
+// Close modal
+closeModal.onclick = ()=> editModal.style.display='none';
+window.onclick = (e)=>{ if(e.target===editModal) editModal.style.display='none'; };
 
-      try {
-        await setDoc(doc(db, "instructions", docId), { text: newText });
-        todayText.innerText = newText;
-        editSection.style.display = 'none';
-        alert("ההוראה עודכנה בהצלחה!");
-      } catch(e) {
-        alert("שגיאה בעדכון: " + e.message);
-      }
-    };
-  </script>
+// Save edit
+saveEditBtn.onclick = async ()=>{
+  const user = auth.currentUser;
+  if(!user){ showMessage(editMessage,'רק אדמין יכול לשנות הוראה','error'); return; }
+
+  const text = editText.value.trim();
+  if(!text){ showMessage(editMessage,'ההוראה לא יכולה להיות ריקה','error'); return; }
+
+  try{
+    await setDoc(doc(db,"instructions",getTodayId()),{text});
+    showMessage(editMessage,'ההוראה עודכנה בהצלחה!','success');
+    await loadInstruction();
+    editModal.style.display='none';
+  } catch(e){ showMessage(editMessage,'שגיאה: '+e.message,'error'); }
+};
+</script>
 </body>
 </html>
+
 
 
